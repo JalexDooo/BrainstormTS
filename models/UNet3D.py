@@ -1,0 +1,64 @@
+import torch
+import torch.nn as nn
+import math
+
+from .BasicModule import *
+
+class UNet3D(nn.Module):
+    def __init__(self, input_data=4, output_data=2, degree=16):
+        super(UNet3D, self).__init__()
+
+        drop = []
+        for i in range(5):
+            drop.append((2 ** i) * degree)
+        print('UNet3D drop: ', drop)
+        
+        self.downLayer1 = ConvBlock(input_data, drop[0])
+        self.downLayer2 = nn.Sequential(
+            nn.MaxPool3d(kernel_size=2, stride=2, padding=0),
+            ConvBlock(drop[0], drop[1])
+        )
+        self.downLayer3 = nn.Sequential(
+            nn.MaxPool3d(kernel_size=2, stride=2, padding=0),
+            ConvBlock(drop[1], drop[2])
+        )
+        self.downLayer4 = nn.Sequential(
+            nn.MaxPool3d(kernel_size=2, stride=2, padding=0),
+            ConvBlock(drop[2], drop[3])
+        )
+        self.bottomLayer = nn.Sequential(
+            nn.MaxPool3d(kernel_size=2, stride=2, padding=0),
+            ConvBlock(drop[3], drop[4])
+        )
+
+        self.upLayer1 = UpBlock(drop[4], drop[3])
+        self.upLayer2 = UpBlock(drop[3], drop[2])
+        self.upLayer3 = UpBlock(drop[2], drop[1])
+        self.upLayer4 = UpBlock(drop[1], drop[0])
+
+        self.outLayer = nn.Conv3d(drop[0], output_data, kernel_size=3, stride=1, padding=1)
+
+        # 初始化
+        for m in self.modules():
+            if isinstance(m, nn.Conv3d):
+                n = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
+                m.weight.data.normal_(0, math.sqrt(2. / n))
+            elif isinstance(m, nn.BatchNorm3d):
+                m.weight.data.fill_(1)
+                m.bias.data.zero_()
+
+    def forward(self, x):
+        x1 = self.downLayer1(x)
+        x2 = self.downLayer2(x1)
+        x3 = self.downLayer3(x2)
+        x4 = self.downLayer4(x3)
+
+        bottom = self.bottomLayer(x4)
+
+        x = self.upLayer1(bottom, x4)
+        x = self.upLayer2(x, x3)
+        x = self.upLayer3(x, x2)
+        x = self.upLayer4(x, x1)
+        x = self.outLayer(x)
+        return x
+

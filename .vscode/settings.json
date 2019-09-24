@@ -1,0 +1,10 @@
+{
+	"python.pythonPath": "/usr/local/bin/python3",
+	"python.linting.pylintArgs":[
+		"--errors-only",
+		"--generated-members=torch.*"
+		// "--generated-members=numpy.*,torch.*,cv2.*,cv.*"
+		// "--disable=torch.*",
+		// "--disable=W,C"
+	]
+}
