@@ -143,3 +143,4 @@ def get_whole_tumor_labels(image):
 def get_tumor_core_labels(image):
 
     return (image == 4) + 0
+

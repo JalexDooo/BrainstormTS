@@ -11,7 +11,7 @@ class UNet3D(nn.Module):
         drop = []
         for i in range(5):
             drop.append((2 ** i) * degree)
-        print('UNet3D drop: ', drop)
+        print('UNet3D drop: ', drop) # [16, 32, 64, 128, 256]
         
         self.downLayer1 = ConvBlock(input_data, drop[0])
         self.downLayer2 = nn.Sequential(

@@ -12,9 +12,8 @@ class DefaultConfig(object):
 	test_img_path = ''
 	test_images = './test_images/'
 
-	
 	load_model_path = None
-	batch_size = 2
+	batch_size = 4
 	use_gpu = True
 	num_workers = 0
 	print_freq = 20
