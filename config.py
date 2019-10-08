@@ -6,8 +6,10 @@ class DefaultConfig(object):
 	vis_port = 8097
 	model = 'UNet3D'
 
-	train_root_path = '/home/sunjindong/dataset/MICCAI_BraTS17_Data_Training_IPP/MICCAI_BraTS17_Data_Training'
-	val_root_path = '/home/sunjindong/dataset/MICCAI_BraTS17_Data_Validation_IPP/Brats17ValidationData'
+	train_root_path = '/home/sunjindong/dataset/MICCAI_BraTS_2019_Data_Training/MICCAI_BraTS_2019_Data_Training'
+	val_root_path = '/home/sunjindong/dataset/MICCAI_BraTS_2019_Data_Training/MICCAI_BraTS_2019_Data_Training'
+
+	local_root_path = '/Users/juntysun/Downloads/数据集/MICCAI_BraTS_2019_Data_Training'
 
 	test_img_path = ''
 	test_images = './test_images/'

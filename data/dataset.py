@@ -187,8 +187,6 @@ class BraTS2017(Dataset):
 
 		image = np.asarray(image)
 		label = np.asarray(label)
-		# print(image.shape)
-		# print(label.shape)
 
 		return image, label
 
@@ -214,6 +212,106 @@ class BraTS2017(Dataset):
 		label_volumn = np.asarray(label_volumn)
 		
 		return image_volumn, label_volumn
+
+
+class BraTS2019(Dataset):
+	"""
+	Brats2019数据集。
+	"""
+	def __init__(self, train_root_path, val_root_path, is_train=True):
+		self.train_root_path = train_root_path
+		self.val_root_path = val_root_path
+		self.is_train = is_train
+		self.data_box = [144, 192, 192]
+		self.data_dim = 16
+
+		self.path_list = load_hgg_lgg_files(self.train_root_path)
+
+	def __len__(self):
+		return len(self.path_list)
+
+	def __getitem__(self, item):
+
+		path = self.path_list[item]
+		image, label = self.first_pre(path)
+		# image, label = self.second_pre(image, label) # 切片
+		image = torch.from_numpy(image).float()
+		label = torch.from_numpy(label).float()
+
+		return image, label
+
+	def first_pre(self, path):
+		"""
+		从路径加载，第一步处理。
+		:param path: 单个大脑路径。
+		:return: 图像，标签。
+		"""
+		image = []
+		label = []
+		image_t, label_t = make_image_label(path)
+		# print(image_t[0].shape)
+		flair, t1, t1ce, t2 = image_t
+		seg = label_t
+
+		# 按照flair确定裁剪区域
+		box_min, box_max = get_box(flair, 0)
+		index_min, index_max = make_box(flair, box_min, box_max, self.data_box)
+
+		# 裁剪
+		flair = crop_with_box(flair, index_min, index_max)
+		t1 = crop_with_box(t1, index_min, index_max)
+		t1ce = crop_with_box(t1ce, index_min, index_max)
+		t2 = crop_with_box(t2, index_min, index_max)
+		seg = crop_with_box(seg, index_min, index_max)
+
+		# 标准化
+		flair = normalization(flair)
+		t1 = normalization(t1)
+		t1ce = normalization(t1ce)
+		t2 = normalization(t2)
+
+		tumor_core_label = get_precise_labels(seg)
+
+		# 想法：阅读别人的程序，发现也可以多方向扫描MRI。
+		# ...
+
+		image.append(flair)
+		image.append(t1)
+		image.append(t1ce)
+		image.append(t2)
+
+		label.append(tumor_core_label)
+
+		image = np.asarray(image)
+		label = np.asarray(label)
+
+		return image, label
+
+	def second_pre(self, image, label):
+		"""
+			随机切片。
+			output:[9, 4, 16, 192, 192]
+		"""
+		times = int(image.shape[1] / self.data_dim)
+
+		image_volumn = []
+		label_volumn = []
+
+		for i in range(times):
+			if self.is_train:
+				st = np.random.randint(0, image.shape[1] - self.data_dim + 1)
+			else:
+				st = i * self.data_dim
+
+			image_volumn.append(image[:, st:st + self.data_dim, :, :])
+			label_volumn.append(label[:, st:st + self.data_dim, :, :])
+
+		image_volumn = np.asarray(image_volumn)
+		label_volumn = np.asarray(label_volumn)
+
+		return image_volumn, label_volumn
+
+
 
 
 

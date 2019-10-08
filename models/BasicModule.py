@@ -59,3 +59,22 @@ class UpBlock(nn.Module):
 def maxpool():
     pool = nn.MaxPool3d(kernel_size=2, stride=2, padding=0)
     return pool
+
+
+class SingleConvBlock(nn.Module):
+    """
+        正卷积
+    """
+
+    def __init__(self, input_data, output_data):
+        super(SingleConvBlock, self).__init__()
+
+        self.conv = nn.Sequential(
+            nn.Conv3d(input_data, output_data, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm3d(output_data),
+            nn.ReLU(inplace=True)
+        )
+
+    def forward(self, x):
+        x = self.conv(x)
+        return x

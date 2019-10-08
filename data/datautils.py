@@ -36,7 +36,7 @@ def make_image_label(path):
     """
         将一个文件夹下的数据加载为一个样本，顺序：flair,t1,t1ce,t2
     """
-    pathes = glob.glob(path+'/*.nii')
+    pathes = glob.glob(path+'/*.nii.gz')
     image = []
     seg = None
 
@@ -143,4 +143,7 @@ def get_whole_tumor_labels(image):
 def get_tumor_core_labels(image):
 
     return (image == 4) + 0
+
+def get_precise_labels(image):
+    return image
 
