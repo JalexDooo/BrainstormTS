@@ -27,3 +27,11 @@ def dice(predict, target):
 
     return (2.0 * intersection + smooth) / (float(predict.sum())
                                             + float(target.sum()) + smooth)
+
+def score(predict, target):
+
+    batch_num = target.shape[0]
+    target = target.view(batch_num, -1)
+    predict = predict.view(batch_num, -1)
+
+    return (1.0*(predict==target)).sum() / float(len(target[0])*batch_num)

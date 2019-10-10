@@ -134,16 +134,18 @@ def normalization(image):
     image = (image - img.mean()) / img.std()
     return image
 
-def get_whole_tumor_labels(image):
-    """
-        用于定位。
-    """
-    return (image > 0) + 0
+def get_ncr_labels(image):
+    return (image == 1)*1.0
+
+def get_ed_labels(image):
+    return (image == 2)*1.0
+
+def get_ot_labels(image):
+    return (image == 3)*1.0
 
 def get_tumor_core_labels(image):
-
-    return (image == 4) + 0
+    return (image == 4)*1.0
 
 def get_precise_labels(image):
-    return image
+    return image*1.0
 

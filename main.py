@@ -2,6 +2,7 @@
 import os
 import gzip
 import glob
+import math
 import numpy as np
 import pandas as pd
 import nibabel as nib
@@ -451,14 +452,21 @@ def datatest():
 	plt.show()
 
 def brats2019_train(**kwargs):
+	device = t.device('cuda') if opt.use_gpu else t.device('cpu')
+
+	if not t.cuda.is_available():
+		print('无法使用CUDA，所以无法训练')
+		return
+
 	device_ids = [0, 1]
 	opt._parse(kwargs)
 
 	# 配置模型
 	model = getattr(models, opt.model)()
+	print('model is : ', opt.model)
 	save_dir = 'ckpt_' + opt.model + '/'
 
-	device = t.device('cuda') if opt.use_gpu else t.device('cpu')
+
 
 	if not os.path.exists(save_dir):
 		os.mkdir(save_dir)
@@ -485,38 +493,61 @@ def brats2019_train(**kwargs):
 	best_dice = -1
 	best_epoch = -1
 	print('criterion and optimizer is finished.')
+	print(model.eval())
 
 	for epoch in range(opt.max_epoch):
 		print('----------------------epoch %d--------------------'%(epoch))
+		train_loss = []
+		train_dice = []
 		model.train()
 		for ii, (image, label) in enumerate(train_dataloader):
 			img = image.cuda()
 			lbl = label.cuda()
-			"""
-			img: [batch_size, 4, 144, 192, 192]
-			lbl: [batch_size, 1, 144, 192, 192]
-			"""
+			for k in range(2):
+				img_ = img[:, :, :, :, 96 * k:96 * k + 96]
+				lbl_ = lbl[:, :, :, 96 * k:96 * k + 96]
+				"""
+				img: [batch_size, 4, 144, 192, 192]
+				lbl: [batch_size, 144, 192, 192]
+				"""
 
-			optimizer.zero_grad()
-			predicts = model(img)
-			print('predicts.shape(): ', predicts.shape)
-			loss = criterion(predicts, lbl)
-			loss.backward()
-			optimizer.step()
+				optimizer.zero_grad()
+				predicts = model(img_)
+				# print('predicts.shape(): ', predicts.shape)
+				# print('lbl.shape(): ', lbl_.shape)
+				loss = criterion(predicts, lbl_.long())
+				train_loss.append(float(loss))
+				# print('loss is : ', loss)
+				loss.backward()
+				optimizer.step()
+
+				predicts = F.softmax(predicts, dim=1)
+				# predicts = (predicts[:, 1, :, :, :] > 0.5).long()
+
+				predicts_sum = ((predicts[:, 4, :, :, :] > 0.5) * 4).long()
+				predicts_sum += ((predicts[:, 3, :, :, :] > 0.5) * (predicts_sum==0) * 3).long()
+				predicts_sum += ((predicts[:, 2, :, :, :] > 0.5) * (predicts_sum==0) * 2).long()
+				predicts_sum += ((predicts[:, 1, :, :, :] > 0.5) * (predicts_sum==0) * 1).long()
 
 
 
 
+				d = dice(predicts_sum, lbl_.long())
+				print('ddddddddd : ', d)
+				train_dice.append(d)
 
-			return
+		print('train_loss : ' + str(sum(train_loss) / (len(train_loss) * 1.0)))
+		print('train_dice : ' + str(sum(train_dice) / (len(train_dice) * 1.0)))
+		if epoch % 5 == 0:
+			torch.save(model.state_dict(), os.path.join(save_dir, 'epoch_%d.pth'%(epoch)))
 
 
 
 def othertest():
-	a = np.array([49, 54, 58])
-	b = np.array([121, 129, 116])
-	c = b-a
-	print(c)
+	a = np.array([1, 1, 3, 0, 0])
+	b = np.array([0, 1, 1, 1, 1])
+	print(score(a, b))
+
 
 def trash():
 

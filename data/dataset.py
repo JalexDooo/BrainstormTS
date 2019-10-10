@@ -270,7 +270,11 @@ class BraTS2019(Dataset):
 		t1ce = normalization(t1ce)
 		t2 = normalization(t2)
 
-		tumor_core_label = get_precise_labels(seg)
+		# label1 = get_ncr_labels(seg)
+		# label2 = get_ed_labels(seg)
+		# label3 = get_ot_labels(seg)
+		# label4 = get_tumor_core_labels(seg)
+		label = get_precise_labels(seg)
 
 		# 想法：阅读别人的程序，发现也可以多方向扫描MRI。
 		# ...
@@ -280,7 +284,10 @@ class BraTS2019(Dataset):
 		image.append(t1ce)
 		image.append(t2)
 
-		label.append(tumor_core_label)
+		# label.append(label1)
+		# label.append(label2)
+		# label.append(label3)
+		# label.append(label4)
 
 		image = np.asarray(image)
 		label = np.asarray(label)
