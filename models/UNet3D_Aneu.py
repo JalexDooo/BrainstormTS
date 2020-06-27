@@ -5,15 +5,15 @@ import math
 from .BasicModule import *
 
 
-class UNet3D(nn.Module):
-    def __init__(self, input_data=4, output_data=5, degree=16):
-        super(UNet3D, self).__init__()
+class UNet3D_Aneu(nn.Module):
+    def __init__(self, input_data=1, output_data=2, degree=16):
+        super(UNet3D_Aneu, self).__init__()
 
         drop = []
         for i in range(5):
             drop.append((2 ** i) * degree)
-        print('UNet3D drop: ', drop) # [16, 32, 64, 128, 256]
-        
+        print('UNet3D drop: ', drop)  # [16, 32, 64, 128, 256]
+
         self.downLayer1 = ConvBlock(input_data, drop[0])
         self.downLayer2 = nn.Sequential(
             nn.MaxPool3d(kernel_size=2, stride=2, padding=0),
@@ -53,11 +53,9 @@ class UNet3D(nn.Module):
         x2 = self.downLayer2(x1)
         x3 = self.downLayer3(x2)
         x4 = self.downLayer4(x3)
-
-        bottom = self.bottomLayer(x4)
-
-        x = self.upLayer1(bottom, x4)
-        x = self.upLayer2(x, x3)
+        # bottom = self.bottomLayer(x4)
+        # x = self.upLayer1(bottom, x4)
+        x = self.upLayer2(x4, x3)
         x = self.upLayer3(x, x2)
         x = self.upLayer4(x, x1)
         x = self.outLayer(x)

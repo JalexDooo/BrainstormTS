@@ -29,7 +29,9 @@ def load_nii_to_array(path):
     """
     image = nib.load(path)
     image = image.get_data()
+
     image = np.transpose(image, [2, 1, 0])
+    # image = np.array(image) ###
     return image
 
 def make_image_label(path):
@@ -124,7 +126,38 @@ def crop_with_box(image, index_min, index_max):
     """
         按照box分割图像。
     """
-    return image[np.ix_(range(index_min[0], index_max[0]), range(index_min[1], index_max[1]), range(index_min[2], index_max[2]))]
+    # return image[np.ix_(range(index_min[0], index_max[0]), range(index_min[1], index_max[1]), range(index_min[2], index_max[2]))]
+    x = index_max[0] - index_min[0] - image.shape[0]
+    y = index_max[1] - index_min[1] - image.shape[1]
+    z = index_max[2] - index_min[2] - image.shape[2]
+    img = image
+    img1 = image
+    img2 = image
+
+    if x > 0:
+        img = np.zeros((image.shape[0]+x, image.shape[1], image.shape[2]))
+        img[x//2:image.shape[0]+x//2, :, :] = image[:, :, :]
+        img1 = img
+
+    if y > 0:
+        img = np.zeros((img1.shape[0], img1.shape[1]+y, img1.shape[2]))
+        img[:, y//2:image.shape[1]+y//2, :] = img1[:, :, :]
+        img2 = img
+
+    if z > 0:
+        img = np.zeros((img2.shape[0], img2.shape[1], img2.shape[2]+z))
+        img[:, :, z//2:image.shape[2]+z//2] = img2[:, :, :]
+
+
+    # print('----')
+    # print(image.shape)
+    # print(img.shape)
+    # print(index_min, index_max)
+    # print('----')
+
+    return img[np.ix_(range(index_min[0], index_max[0]), range(index_min[1], index_max[1]), range(index_min[2], index_max[2]))]
+
+
 
 def normalization(image):
     """
@@ -134,18 +167,36 @@ def normalization(image):
     image = (image - img.mean()) / img.std()
     return image
 
-def get_ncr_labels(image):
+def get_WT_labels(image):
+    return (image == 1) * 1.0 + (image == 2) * 1.0 + (image == 4) * 1.0
+
+def get_TC_labels(image):
+    return (image == 1) * 1.0 + (image == 4) * 1.0
+
+def get_ET_labels(image):
+    return (image == 4) * 1.0
+
+def get_NCR_NET_label(image):
+    """
+    ET: enhancing tumor
+    For ET task.
+    :param image:
+    :return:
+    """
     return (image == 1)*1.0
-
-def get_ed_labels(image):
-    return (image == 2)*1.0
-
-def get_ot_labels(image):
-    return (image == 3)*1.0
-
-def get_tumor_core_labels(image):
-    return (image == 4)*1.0
 
 def get_precise_labels(image):
     return image*1.0
 
+########################### 动脉瘤处理
+def load_aneu_image_path(path):
+    return glob.glob(path+'/1/*') + glob.glob(path+'/2/*') + glob.glob(path+'/3/*')
+
+## WT: label==2, ET: label==4, TC: label==1
+# image = load_nii_to_array('/Users/juntysun/Downloads/Create/BrainstormTS/brats2019_val_moduletest5_random/BraTS19_UAB_3448_1.nii.gz')
+# print((image==1).sum())
+# print((image==2).sum())
+# print((image==4).sum())
+# 1247
+# 22514
+# 12776

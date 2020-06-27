@@ -7,12 +7,23 @@ class DefaultConfig(object):
 	model = 'UNet3D'
 
 	train_root_path = '/home/sunjindong/dataset/MICCAI_BraTS_2019_Data_Training/MICCAI_BraTS_2019_Data_Training'
-	val_root_path = '/home/sunjindong/dataset/MICCAI_BraTS_2019_Data_Training/MICCAI_BraTS_2019_Data_Training'
+	val_root_path = '/home/sunjindong/dataset/MICCAI_BraTS_2019_Data_Validation/MICCAI_BraTS_2019_Data_Validation'
+	tttt = '/home/test/dateset/MICCAI_BraTS_2019_Data_Validation/MICCAI_BraTS_2019_Data_Validation'
+	ttttt = '/home/test/dataset/MICCAI_BraTS_2019_Data_Training/MICCAI_BraTS_2019_Data_Training'
+	# val_root_path = '/home/sunjindong/dataset/MICCAI_BraTS17_Data_Validation_IPP/Brats17ValidationData'
+
+	# aneu_path = '/Users/juntysun/Downloads/数据集/动脉瘤数据'
+	aneu_path = '/home/aneu/dataset/dongmai'
+	aneu_val_path = '/home/aneu/dataset/val_dataset'
 
 	local_root_path = '/Users/juntysun/Downloads/数据集/MICCAI_BraTS_2019_Data_Training'
 
 	test_img_path = ''
 	test_images = './test_images/'
+
+	task = 'WT'
+
+	predict_nibable_path = './predict_nibable'
 
 	load_model_path = None
 	batch_size = 4
@@ -21,6 +32,7 @@ class DefaultConfig(object):
 	print_freq = 20
 
 	max_epoch = 2
+	random_epoch = 4
 	lr = 0.001
 	lr_decay = 0.95
 	weight_decay = 1e-4
