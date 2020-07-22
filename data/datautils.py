@@ -148,15 +148,7 @@ def crop_with_box(image, index_min, index_max):
         img = np.zeros((img2.shape[0], img2.shape[1], img2.shape[2]+z))
         img[:, :, z//2:image.shape[2]+z//2] = img2[:, :, :]
 
-
-    # print('----')
-    # print(image.shape)
-    # print(img.shape)
-    # print(index_min, index_max)
-    # print('----')
-
     return img[np.ix_(range(index_min[0], index_max[0]), range(index_min[1], index_max[1]), range(index_min[2], index_max[2]))]
-
 
 
 def normalization(image):

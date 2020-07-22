@@ -4,6 +4,7 @@ import math
 
 from .BasicModule import *
 
+
 class mytc(nn.Module):
     def __init__(self, ch1, ch2, kn):
         super(mytc, self).__init__()
@@ -16,6 +17,7 @@ class mytc(nn.Module):
         x = self.down(x)
         return x
 
+
 class ModuleTest5(nn.Module):
     def __init__(self, in_data=4, out_data=5):
         super(ModuleTest5, self).__init__()
@@ -23,8 +25,8 @@ class ModuleTest5(nn.Module):
 
         # pathway-1
         self.in1_model = nn.Sequential(
-            # DilationConvBlock(in_data, kn[0]),
-            ConvBlockWithKernel3(in_data, kn[0]),
+            DilationConvBlock(in_data, kn[0]),
+            # ConvBlockWithKernel3(in_data, kn[0]),
             nn.MaxPool3d(kernel_size=2, stride=2, padding=0)
         )
 
@@ -44,8 +46,8 @@ class ModuleTest5(nn.Module):
 
         #pathway-2
         self.in2_model = nn.Sequential(
-            # DilationConvBlock(kn[0], kn[1]),
-            ConvBlockWithKernel3(kn[0], kn[1]),
+            DilationConvBlock(kn[0], kn[1]),
+            # ConvBlockWithKernel3(kn[0], kn[1]),
             nn.MaxPool3d(kernel_size=2, stride=2, padding=0)
         )
         self.layer2_1 = nn.Sequential(
@@ -60,8 +62,8 @@ class ModuleTest5(nn.Module):
 
         #pathway-3
         self.in3_model = nn.Sequential(
-            # DilationConvBlock(kn[1], kn[2]),
-            ConvBlockWithKernel3(kn[1], kn[2]),
+            DilationConvBlock(kn[1], kn[2]),
+            # ConvBlockWithKernel3(kn[1], kn[2]),
             nn.MaxPool3d(kernel_size=2, stride=2, padding=0)
         )
         self.layer3_1 = nn.Sequential(
@@ -72,28 +74,11 @@ class ModuleTest5(nn.Module):
 
         #pathway-4
         self.in4_model = nn.Sequential(
-            # DilationConvBlock(kn[2], kn[3]),
-            ConvBlockWithKernel3(kn[2], kn[3]),
+            DilationConvBlock(kn[2], kn[3]),
+            # ConvBlockWithKernel3(kn[2], kn[3]),
             nn.MaxPool3d(kernel_size=2, stride=2, padding=0)
         )
         self.layer4_1 = ConvBlockWithKernel3(kn[3], kn[4])
-
-        # self.tc1 = nn.Sequential(
-        #     TransConvBlock(kn[4]*4, kn[4]*2, 2),
-        #     ConvBlockWithKernel3(kn[4]*2, kn[4]*2)
-        # )
-        # self.tc2 = nn.Sequential(
-        #     TransConvBlock(kn[4]*2, kn[4], 2),
-        #     ConvBlockWithKernel3(kn[4], kn[4])
-        # )
-        # self.tc3 = nn.Sequential(
-        #     TransConvBlock(kn[4], kn[3], 2),
-        #     ConvBlockWithKernel3(kn[3], kn[3])
-        # )
-        # self.tc4 = nn.Sequential(
-        #     TransConvBlock(kn[3], kn[2], 2),
-        #     ConvBlockWithKernel3(kn[2], kn[2])
-        # )
 
         self.mytc1 = mytc(256 * 4, 256, 64)
         self.mytc2 = mytc(256, 128, 32)
@@ -165,25 +150,6 @@ class ModuleTest5(nn.Module):
         x = self.mytc2(x, x2_)
         x = self.mytc3(x, x1_)
         x = self.mytc4(x, ind)
-
-        # x = self.tc1(x)
-        # # print('x1.shape: ', x.shape)
-        # x = self.tc2(x)
-        # # print('x2.shape: ', x.shape)
-        # x = self.tc3(x)
-        # # print('x3.shape: ', x.shape)
-        # x = self.tc4(x)
-        # # print('x4.shape: ', x.shape)
-        '''
-        x1.shape:  torch.Size([1, 256, 18, 24, 12])
-        x2.shape:  torch.Size([1, 128, 36, 48, 24])
-        x3.shape:  torch.Size([1, 64, 72, 96, 48])
-        x4.shape:  torch.Size([1, 32, 144, 192, 96])
-        '''
-        # print('x.shape: ', x.shape)
-        '''
-        torch.Size([1, 32, 144, 192, 96])
-        '''
 
         x = self.out_model(x)
         # return

@@ -11,3 +11,5 @@ from .ModuleTest5 import ModuleTest5
 from .ModuleTest6 import ModuleTest6
 from .UNet3D_Aneu import UNet3D_Aneu
 from .ResUnet import ResUnet
+from .NewResUnet1 import NewResUnet1
+from .Resnet import Resnet

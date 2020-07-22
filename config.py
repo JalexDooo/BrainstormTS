@@ -14,7 +14,8 @@ class DefaultConfig(object):
 
 	# aneu_path = '/Users/juntysun/Downloads/数据集/动脉瘤数据'
 	aneu_path = '/home/aneu/dataset/dongmai'
-	aneu_val_path = '/home/aneu/dataset/val_dataset'
+	aneu_val_path = '/home/aneu/dataset/final_val_dataset'
+	aneu_output_path = '/home/aneu/Brainstorm/final_val'
 
 	local_root_path = '/Users/juntysun/Downloads/数据集/MICCAI_BraTS_2019_Data_Training'
 
@@ -34,7 +35,7 @@ class DefaultConfig(object):
 	max_epoch = 2
 	random_epoch = 4
 	lr = 0.001
-	lr_decay = 0.95
+	lr_decay = 0.99
 	weight_decay = 1e-4
 
 	def _parse(self, kwargs):

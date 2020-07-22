@@ -29,25 +29,43 @@ def dice(predict, target):
     predict = predict.view(batch_num, -1)
     intersection = float((target * predict).sum())
 
-    return (2.0 * intersection + smooth) / (float(predict.sum())
-                                            + float(target.sum()) + smooth)
+    return (2.0 * intersection + smooth) / (float(predict.sum()) + float(target.sum()) + smooth)
 
 
-def score(predict, target):
-    e = 0.000000001
-    # print('score begin:')
+def sensitivity(predict, target):
+    """
 
+    :param predict: 4D Long Tensor Batch_Size * 16(volume_size) * height * weight
+    :param target:  4D Long Tensor Batch_Size * 16(volume_size) * height * weight
+    :return:
+    """
+    smooth = 0.00000001
     batch_num = target.shape[0]
     target = target.view(batch_num, -1)
     predict = predict.view(batch_num, -1)
-    # print('target: ', target.shape)
-    # print('predict: ', predict.shape)
-    t1 = float((1.0*(predict==target)).sum())+e
-    t2 = float(len(target[0])*batch_num)+e
-    # print('t1: ', t1)
-    # print('t2: ', t2)
+    intersection = float((target * predict).sum())
 
-    return t1 / t2
+    return (intersection + smooth) / (float(target.sum()) + smooth)
+
+
+def specificity(predict, target):
+    """
+
+    :param predict: 4D Long Tensor Batch_Size * 16(volume_size) * height * weight
+    :param target:  4D Long Tensor Batch_Size * 16(volume_size) * height * weight
+    :return:
+    """
+    smooth = 0.00000001
+    batch_num = target.shape[0]
+    target = target.view(batch_num, -1)
+    predict = predict.view(batch_num, -1)
+    target = (target == 0)
+    predict = (predict == 0)
+    tn = float((target * predict).sum())
+    predict = (predict == 0)
+    fp = float((target * predict).sum())
+
+    return (tn + smooth) / (tn + fp + smooth)
 
 
 def save_array_as_nifty_volume(data, filename, reference_name = None):
@@ -107,9 +125,29 @@ def crop_with_box(image, index_min, index_max):
     """
         按照box分割图像。
     """
-    return image[
-        np.ix_(range(index_min[0], index_max[0]), range(index_min[1], index_max[1]), range(index_min[2], index_max[2]))]
+    # return image[np.ix_(range(index_min[0], index_max[0]), range(index_min[1], index_max[1]), range(index_min[2], index_max[2]))]
+    x = index_max[0] - index_min[0] - image.shape[0]
+    y = index_max[1] - index_min[1] - image.shape[1]
+    z = index_max[2] - index_min[2] - image.shape[2]
+    img = image
+    img1 = image
+    img2 = image
 
+    if x > 0:
+        img = np.zeros((image.shape[0]+x, image.shape[1], image.shape[2]))
+        img[x//2:image.shape[0]+x//2, :, :] = image[:, :, :]
+        img1 = img
+
+    if y > 0:
+        img = np.zeros((img1.shape[0], img1.shape[1]+y, img1.shape[2]))
+        img[:, y//2:image.shape[1]+y//2, :] = img1[:, :, :]
+        img2 = img
+
+    if z > 0:
+        img = np.zeros((img2.shape[0], img2.shape[1], img2.shape[2]+z))
+        img[:, :, z//2:image.shape[2]+z//2] = img2[:, :, :]
+
+    return img[np.ix_(range(index_min[0], index_max[0]), range(index_min[1], index_max[1]), range(index_min[2], index_max[2]))]
 
 def out_precessing(label):
     tmp = np.asarray(label)

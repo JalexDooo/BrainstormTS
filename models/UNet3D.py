@@ -6,7 +6,7 @@ from .BasicModule import *
 
 
 class UNet3D(nn.Module):
-    def __init__(self, input_data=4, output_data=5, degree=16):
+    def __init__(self, in_data=4, out_data=5, degree=16):
         super(UNet3D, self).__init__()
 
         drop = []
@@ -14,7 +14,7 @@ class UNet3D(nn.Module):
             drop.append((2 ** i) * degree)
         print('UNet3D drop: ', drop) # [16, 32, 64, 128, 256]
         
-        self.downLayer1 = ConvBlock(input_data, drop[0])
+        self.downLayer1 = ConvBlock(in_data, drop[0])
         self.downLayer2 = nn.Sequential(
             nn.MaxPool3d(kernel_size=2, stride=2, padding=0),
             ConvBlock(drop[0], drop[1])
@@ -37,7 +37,7 @@ class UNet3D(nn.Module):
         self.upLayer3 = UpBlock(drop[2], drop[1])
         self.upLayer4 = UpBlock(drop[1], drop[0])
 
-        self.outLayer = nn.Conv3d(drop[0], output_data, kernel_size=3, stride=1, padding=1)
+        self.outLayer = nn.Conv3d(drop[0], out_data, kernel_size=3, stride=1, padding=1)
 
         # 初始化
         for m in self.modules():

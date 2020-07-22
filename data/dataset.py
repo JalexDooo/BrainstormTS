@@ -515,13 +515,11 @@ class AneuMulti(Dataset):
 		affine = head_image.affine
 
 		img_shape = image.shape
+		# print(image_path, ' --> ', img_shape)
 
 		index_min, index_max = get_box(image, margin=0)
 
 		index_min, index_max = make_box(image, index_min, index_max, self.index_box)
-
-		# print('image.shape: ', image.shape)
-		# print('index: ', index_min, index_max)
 
 		image = crop_with_box(image, index_min, index_max)
 		if self.is_train:
@@ -542,7 +540,7 @@ class AneuMulti(Dataset):
 		name_list = image_path.split('/')
 		name = name_list[-3] + '_' + name_list[-2]
 		if self.is_train:
-			return torch.from_numpy(image).float(), torch.from_numpy(label).float()
+			return torch.from_numpy(image).float(), torch.from_numpy(label).float(), name
 		else:
 			return torch.from_numpy(image).float(), torch.from_numpy(label).float(), img_shape, index_min, index_max, affine, name
 
@@ -701,7 +699,6 @@ class BraTS2019_Random_DataArg(Dataset):
 		return len(self.path_list)
 
 	def __getitem__(self, item):
-
 		path = self.path_list[item]
 		if self.predict:
 			print(path)

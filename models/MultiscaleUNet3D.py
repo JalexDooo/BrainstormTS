@@ -5,7 +5,7 @@ import math
 from .BasicModule import *
 
 class MultiscaleUNet3D(nn.Module):
-    def __init__(self, input_data=4, output_data=2, degree=16):
+    def __init__(self, in_data=4, out_data=2, degree=16):
         super(MultiscaleUNet3D, self).__init__()
 
         # kn = [] # [degree, degree*2, degree*4, degree*8, ...] [16, 32, 64]
@@ -14,7 +14,7 @@ class MultiscaleUNet3D(nn.Module):
         kn = [32, 128, 256, 384]
         # kn = [1, 1, 1, 1]
 
-        self.pre_layer = SingleConvBlock(input_data, kn[0])
+        self.pre_layer = SingleConvBlock(in_data, kn[0])
         self.unit1 = nn.Sequential(
             DoubleScaleUnit(kn[0], kn[1]),
             nn.MaxPool3d(kernel_size=2, stride=2, padding=0)
@@ -30,13 +30,8 @@ class MultiscaleUNet3D(nn.Module):
 
         self.out_layer = nn.Sequential(
             SingleTransConvBlock(kn[0], kn[0] * 2),
-            nn.Conv3d(kn[0] * 2, output_data, kernel_size=3, stride=1, padding=1)
+            nn.Conv3d(kn[0] * 2, out_data, kernel_size=3, stride=1, padding=1)
         )
-
-
-
-
-
 
         # 初始化
         for m in self.modules():

@@ -24,6 +24,29 @@ class ConvBlock(nn.Module):
         x = self.conv2(x)
         return x
 
+class LConvBlock(nn.Module):
+    """
+        正卷积
+    """
+    def __init__(self, input_data, output_data):
+        super(LConvBlock, self).__init__()
+
+        self.conv1 = nn.Sequential(
+            nn.Conv3d(input_data, output_data, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm3d(output_data),
+            nn.LeakyReLU(inplace=True)
+        )
+        self.conv2 = nn.Sequential(
+            nn.Conv3d(output_data, output_data, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm3d(output_data),
+            nn.LeakyReLU(inplace=True)
+        )
+
+    def forward(self, x):
+        x = self.conv1(x)
+        x = self.conv2(x)
+        return x
+
 class ConvTransBlock(nn.Module):
     def __init__(self, input_data, output_data):
         super(ConvTransBlock, self).__init__()
@@ -91,6 +114,9 @@ class ConvBlockWithKernel3(nn.Module):
         self.conv = nn.Sequential(
             nn.Conv3d(input_data, output_data, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm3d(output_data),
+            nn.RReLU(lower=0.125, upper=1.0/3, inplace=True),
+            nn.Conv3d(output_data, output_data, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm3d(output_data),
             nn.RReLU(lower=0.125, upper=1.0/3, inplace=True)
             # nn.ReLU(inplace=True)
         )
@@ -146,9 +172,12 @@ class DilationConvBlock(nn.Module):
     def __init__(self, in_channels, out_channels):
         super(DilationConvBlock, self).__init__()
         self.conv = nn.Sequential(
-            nn.Conv3d(in_channels, out_channels, kernel_size=3, stride=2, dilation=2, padding=2),
+            nn.Conv3d(in_channels, out_channels, kernel_size=3, stride=1, dilation=2, padding=2),
             nn.BatchNorm3d(out_channels),
-            nn.ReLU(inplace=True)
+            nn.RReLU(lower=0.125, upper=1.0 / 3, inplace=True),
+            nn.Conv3d(out_channels, out_channels, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm3d(out_channels),
+            nn.RReLU(lower=0.125, upper=1.0 / 3, inplace=True)
         )
 
     def forward(self, x):
@@ -192,6 +221,7 @@ class FullResBlock(nn.Module):
         x = self.relu(x)
         return x
 
+
 class NewResBlock(nn.Module):
     def __init__(self, input_data, output_data):
         super(NewResBlock, self).__init__()
@@ -214,6 +244,7 @@ class NewResBlock(nn.Module):
         x = self.conv(x)
         x += res
         return x
+
 
 class NewConvDown(nn.Module):
     def __init__(self, input_data, output_data, stride=2):
@@ -247,3 +278,29 @@ class OutConv(nn.Module):
     def forward(self, x):
         x = self.conv(x)
         return x
+
+
+class NewResUnet_ResBlock1(nn.Module):
+    def __init__(self, input_data, output_data):
+        super(NewResUnet_ResBlock1, self).__init__()
+        self.resblock = nn.Sequential(
+            nn.BatchNorm3d(input_data),
+            nn.RReLU(lower=0.125, upper=1.0 / 3, inplace=True),
+            nn.Conv3d(input_data, output_data, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm3d(output_data),
+            nn.RReLU(lower=0.125, upper=1.0 / 3, inplace=True),
+            nn.Conv3d(output_data, output_data, kernel_size=3, stride=1, padding=1)
+        )
+        self.conv = nn.Sequential(
+            nn.BatchNorm3d(input_data),
+            nn.RReLU(lower=0.125, upper=1.0 / 3, inplace=True),
+            nn.Conv3d(input_data, output_data, kernel_size=3, stride=1, padding=1)
+        )
+
+    def forward(self, x):
+        res = self.resblock(x)
+        x = self.conv(x)
+        x += res
+        return x
+
+
