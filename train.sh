@@ -145,9 +145,17 @@
 #cd /home/aneu/Brainstorm && python main.py dataset_clean --task='Random' --model='NewResUnet1' --max_epoch=21 --batch_size=4 --lr=0.001 #--load_model_path='task_Random__epoch_14.pth'
 
 # --------------------------------------- Neurocomputing fix ---------------------------------------------
-#cd /home/sunjindong/BrainstormTS && python main.py ModuleTest_multi_train_random --task='Random' --model='ModuleTest5' --random_epoch=100 --max_epoch=1 --batch_size=8
-cd /home/sunjindong/BrainstormTS && python main.py ModuleTest_multi_val_random --task='Random' --model='ModuleTest5' --max_epoch=1 --batch_size=1  --load_model_path='task_Random__final_epoch.pth' --predict_nibable_path='./brats2019_val_moduletest5_random/'
-#cd /home/sunjindong/BrainstormTS && python main.py ModuleTest_multi_train_random --task='Random' --model='ModuleTest4' --random_epoch=100 --max_epoch=1 --batch_size=4
+#cd /home/sunjindong/BrainstormTS && python main.py ModuleTest_multi_train_random --task='Random' --model='ModuleTest5' --random_epoch=300 --max_epoch=1 --batch_size=8
+#cd /home/sunjindong/BrainstormTS && python main.py ModuleTest_multi_val_random --task='Random' --model='ModuleTest5' --max_epoch=1 --batch_size=1  --load_model_path='task_Random__final_epoch.pth' --predict_nibable_path='./brats2019_val_moduletest5_random/'
+
+# --
+#cd /home/sunjindong/BrainstormTS && python main.py ModuleTest_multi_train_random --task='Random' --model='Zhengrong_Luo' --random_epoch=300 --max_epoch=1 --batch_size=8
+#cd /home/sunjindong/BrainstormTS && python main.py ModuleTest_multi_val_random --task='Random' --model='Zhengrong_Luo' --max_epoch=1 --batch_size=1  --load_model_path='task_Random__final_epoch.pth' --predict_nibable_path='./brats2019_val_Zhengrong_Luo_random/'
+
+#cd /home/sunjindong/BrainstormTS && python main.py ModuleTest_multi_train_random --task='Random' --model='Yi_Ding' --random_epoch=100 --max_epoch=1 --batch_size=8
+#cd /home/sunjindong/BrainstormTS && python main.py ModuleTest_multi_val_random --task='Random' --model='Yi_Ding' --max_epoch=1 --batch_size=1  --load_model_path='task_Random__final_epoch.pth' --predict_nibable_path='./brats2019_val_Yi_Ding_random/'
+
+cd /home/sunjindong/BrainstormTS && python main.py ModuleTest_multi_train_random --task='Random' --model='Liangliang_Liu' --random_epoch=100 --max_epoch=1 --batch_size=8
 
 # date2=`date +%s`
 # ((timer=date2-date1))

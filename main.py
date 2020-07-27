@@ -2563,6 +2563,11 @@ def Aneu_test(**kwargs):
 	save.to_csv('./' + opt.model + '_' + opt.load_model_path[:-4] + '_multi_score.csv', index=False, header=False)
 
 
+def hhhhh():
+	model = models.Liangliang_Liu(in_data=1, out_data=2)
+	data = torch.randn(2, 1, 16, 16, 64)
+	out = model(data)
+
 def ModuleTest_multi_train_random(**kwargs):
 
 	if not t.cuda.is_available():

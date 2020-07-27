@@ -647,8 +647,6 @@ class BraTS2019_Random(Dataset):
 		label = np.asarray(label)
 		image, label = self.second_pre(image, label)
 
-
-
 		return image, label, index_min, index_max
 
 	def second_pre(self, image, label):

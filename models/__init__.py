@@ -9,7 +9,6 @@ from .ModuleTest3 import ModuleTest3
 from .ModuleTest4 import ModuleTest4
 from .ModuleTest5 import ModuleTest5
 from .ModuleTest6 import ModuleTest6
-from .UNet3D_Aneu import UNet3D_Aneu
-from .ResUnet import ResUnet
-from .NewResUnet1 import NewResUnet1
-from .Resnet import Resnet
+from .Zhengrong_Luo_proposed import Zhengrong_Luo
+from .Yi_Ding_proposed import Yi_Ding
+from .Liangliang_Liu_proposed import Liangliang_Liu
